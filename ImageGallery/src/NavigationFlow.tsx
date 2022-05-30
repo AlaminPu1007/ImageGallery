@@ -11,10 +11,13 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 //bring home screen
 import HomeScreen from './Screen/HomeScreen';
+// bring image click to full screen view able screen\
+import ImageViewScreen from './Screen/ImageViewScreen';
 
 // type for auth stack
 export type RootStackParamList = {
   Home: undefined;
+  ImageView: undefined;
 };
 //create stack navigation
 const StackNav = createNativeStackNavigator<RootStackParamList>();
@@ -24,6 +27,7 @@ const StackNavigation = () => {
   return (
     <StackNav.Navigator screenOptions={{headerShown: false}}>
       <StackNav.Screen name="Home" component={HomeScreen} />
+      <StackNav.Screen name="ImageView" component={ImageViewScreen} />
     </StackNav.Navigator>
   );
 };
