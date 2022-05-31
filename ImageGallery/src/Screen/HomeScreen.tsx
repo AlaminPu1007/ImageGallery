@@ -4,30 +4,30 @@
  *implemented here
  */
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   StatusBar,
   ScrollView,
   Image,
   Dimensions,
-  Platform,
   Alert,
   PermissionsAndroid,
+  Animated,
+  PanResponder,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-// bring custom responsive thing
-import {heightToDp, ResponsiveFontSize} from '../component/Responsive';
+import {launchCamera} from 'react-native-image-picker';
+
 //bring our custom color component
 import Color from '../component/Color';
 import {RootStackParamList} from '../NavigationFlow';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import RenderImage from './homeComponent/RenderImage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 //define globally of color value
 const ColorValue = Color();
 const {width} = Dimensions.get('window');
@@ -37,16 +37,20 @@ const {width} = Dimensions.get('window');
 type Props = NativeStackScreenProps<RootStackParamList, 'ImageView'>;
 
 const HomeScreen = ({navigation}: Props) => {
+  // for pan responder
+  const pan = useRef(new Animated.ValueXY()).current;
   // our use state is defined here
   // define state to save data inside local storage
   const [imageData, setImageData] = useState<any>([]);
+  // define use state for swipe left/right
+  const [swipeValue, setSwipeValue] = useState<string>('');
 
   /**
    * Persists data from local storage
    */
   useEffect(() => {
     getImage();
-  }, [imageData]);
+  }, []);
   // method to persist data from local storage
   const getImage = async () => {
     var result = JSON.parse((await AsyncStorage.getItem('imageData')) || '[]');
@@ -120,19 +124,48 @@ const HomeScreen = ({navigation}: Props) => {
     }
   };
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+
+      // onPanResponderMove: (evt, gestureState) => { },
+      onPanResponderRelease: (evt, gestureState) => {
+        // if user left swipe is true
+        if (gestureState.dx > 70) {
+          //do left swipe stuff
+          setSwipeValue('Left-Swipe');
+        } else if (gestureState.dx < -70) {
+          // do right swipe stuff
+          setSwipeValue('Right-Swipe');
+        }
+
+        pan.flattenOffset();
+      },
+    }),
+  ).current;
+
   return (
     <SafeAreaView style={styles.SafeAreaViewStyle}>
       <StatusBar backgroundColor={ColorValue.Black} />
+
       <ScrollView
+        horizontal={false}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.ContentStyle}>
-        <View style={styles.BodyViewStyle}>
+        <Animated.View
+          style={styles.BodyViewStyle}
+          {...panResponder.panHandlers}>
           {/* Render Image component */}
           <View style={styles.imageView}>
-            <RenderImage ImageData={imageData} navigation={navigation} />
+            <RenderImage
+              swipeValue={swipeValue}
+              setSwipeValue={setSwipeValue}
+              ImageData={imageData}
+              navigation={navigation}
+            />
           </View>
-        </View>
+        </Animated.View>
       </ScrollView>
       {/* Camera button will be appear here */}
       <View style={styles.cameraImageView}>

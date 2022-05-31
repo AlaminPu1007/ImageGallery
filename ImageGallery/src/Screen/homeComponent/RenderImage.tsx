@@ -18,13 +18,13 @@ import {RootStackParamList} from '../../NavigationFlow';
 const {width} = Dimensions.get('window');
 const ColorValue = Color();
 
-const RenderImage = ({ImageData}: any) => {
+const RenderImage = ({ImageData, swipeValue, setSwipeValue}: any) => {
   // define navigation by use navigation hook
   const navigation = useNavigation<any>();
 
   ///pagination useState
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [postPerPage, setPostPerPage] = useState<number>(4);
+  const [postPerPage] = useState<number>(4);
 
   const indexOfLastPost = currentPage * postPerPage;
   const indexOfFirstPost = indexOfLastPost - postPerPage;
@@ -41,6 +41,22 @@ const RenderImage = ({ImageData}: any) => {
   useEffect(() => {
     setPageLength(pageNumbers.length);
   }, [pageNumbers.length]);
+
+  useEffect(() => {
+    if (swipeValue) {
+      // called right swipe method
+      if (swipeValue === 'Right-Swipe') {
+        NextPageMethod();
+        //after each called, we need to clear our state
+        setSwipeValue('');
+      } else if (swipeValue === 'Left-Swipe') {
+        //called left swipe method
+        PreviousPageMethod();
+        //after each called, we need to clear our state
+        setSwipeValue('');
+      }
+    }
+  }, [swipeValue]);
 
   // On press method will be goes here
   // for next page

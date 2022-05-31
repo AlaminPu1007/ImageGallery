@@ -29,6 +29,7 @@ const ImageViewScreen = ({navigation, route}: Props) => {
 
   // close image full screen modal
   const navigateToBack = () => navigation.goBack();
+
   return (
     <SafeAreaView style={styles.SafeAreaViewStyle}>
       <StatusBar backgroundColor={ColorValue.Black} />

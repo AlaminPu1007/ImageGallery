@@ -7,9 +7,15 @@ import React from 'react';
 import NavigationFlow from './src/NavigationFlow';
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {StyleSheet} from 'react-native';
 
 const App = () => {
-  return <NavigationFlow />;
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <NavigationFlow />
+    </GestureHandlerRootView>
+  );
 };
 
 export default () => {
@@ -19,3 +25,7 @@ export default () => {
     </Provider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {flex: 1},
+});
