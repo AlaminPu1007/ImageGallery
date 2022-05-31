@@ -21,11 +21,12 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 // bring custom responsive thing
-import {heightToDp} from '../component/Responsive';
+import {heightToDp, ResponsiveFontSize} from '../component/Responsive';
 //bring our custom color component
 import Color from '../component/Color';
 import {RootStackParamList} from '../NavigationFlow';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import RenderImage from './homeComponent/RenderImage';
 //define globally of color value
 const ColorValue = Color();
 const {width} = Dimensions.get('window');
@@ -37,9 +38,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ImageView'>;
 const HomeScreen = ({navigation}: Props) => {
   // our use state is defined here
   const [imageData, setImageData] = useState<any>([]);
-  if (__DEV__) {
-    console.log(imageData);
-  }
+
   /**
    * Camera related method will define here
    */
@@ -109,17 +108,21 @@ const HomeScreen = ({navigation}: Props) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.ContentStyle}>
         <View style={styles.BodyViewStyle}>
-          {/* Camera button will be appear here */}
-          <View style={styles.cameraImageView}>
-            <TouchableOpacity activeOpacity={0.5} onPress={OpenCameraMethod}>
-              <Image
-                source={require('../../assets/camera.png')}
-                style={styles.cameraImageStyle}
-              />
-            </TouchableOpacity>
+          {/* Render Image component */}
+          <View style={styles.imageView}>
+            <RenderImage ImageData={imageData} />
           </View>
         </View>
       </ScrollView>
+      {/* Camera button will be appear here */}
+      <View style={styles.cameraImageView}>
+        <TouchableOpacity activeOpacity={0.5} onPress={OpenCameraMethod}>
+          <Image
+            source={require('../../assets/camera.png')}
+            style={styles.cameraImageStyle}
+          />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -136,16 +139,24 @@ const styles = StyleSheet.create({
   },
   BodyViewStyle: {
     flex: 1,
-    width: '100%',
     alignItems: 'center',
     position: 'relative',
   },
   cameraImageStyle: {
-    width: width * 0.1,
-    height: width * 0.1,
+    width: width * 0.11,
+    height: width * 0.11,
+    backgroundColor: ColorValue.WHITE,
+    // borderRadius: ResponsiveFontSize(100),
+  },
+  imageView: {
+    width: '100%',
+    alignItems: 'center',
   },
   cameraImageView: {
     position: 'absolute',
     bottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
 });
