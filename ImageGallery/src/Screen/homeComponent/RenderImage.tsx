@@ -10,12 +10,16 @@ import React, {useEffect, useState} from 'react';
 import {heightToDp, ResponsiveFontSize} from '../../component/Responsive';
 import ConstValue from '../../component/ConstValue';
 import Color from '../../component/Color';
+import {useNavigation} from '@react-navigation/native';
 
 //get dimension value
 const {width} = Dimensions.get('window');
 const ColorValue = Color();
 
 const RenderImage = ({ImageData}: any) => {
+  // define navigation by use navigation hook
+  const navigation = useNavigation();
+
   ///pagination useState
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [postPerPage, setPostPerPage] = useState<number>(4);
@@ -25,7 +29,6 @@ const RenderImage = ({ImageData}: any) => {
   const currentPosts = ImageData?.slice(indexOfFirstPost, indexOfLastPost);
 
   ///start pagination screen here
-
   const totalPosts = ImageData.length;
   const pageNumbers = [];
   for (let i = 1; i <= Math.ceil(totalPosts / postPerPage); i++) {
@@ -37,27 +40,62 @@ const RenderImage = ({ImageData}: any) => {
     setPageLength(pageNumbers.length);
   }, [pageNumbers.length]);
 
+  // On press method will be goes here
+  // for next page
+  const NextPageMethod = () => {
+    if (currentPage >= 1 && currentPage < pageNumbers.length) {
+      return setCurrentPage(currentPage + 1);
+    }
+  };
+  // for previous screen
+  const PreviousPageMethod = () => {
+    if (currentPage > 1 && currentPage <= pageNumbers.length) {
+      return setCurrentPage(currentPage - 1);
+    }
+  };
+
+  //render if no image is found
+  if (!currentPosts?.length) {
+    return (
+      <View style={styles.noImageFoundView}>
+        <Text style={styles.noImageFoundText}>
+          No image found. Please add some image by clicking on camera button
+        </Text>
+      </View>
+    );
+  }
+
+  // navigate to clickable image full screen mode
+  const navigateToFullScreen = (item: any) => {
+    navigation.navigate('ImageView', {item: item});
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.bodyContainer}>
-        {currentPosts?.length ? (
-          currentPosts.map(item => {
-            return (
-              <View key={item.uri} style={styles.mapContainer}>
-                <Image source={{uri: item.uri}} style={styles.imageStyle} />
-              </View>
-            );
-          })
-        ) : (
-          <Text>no image found</Text>
-        )}
+        {currentPosts.map(item => {
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                navigateToFullScreen(item);
+              }}
+              activeOpacity={0.5}
+              key={item.uri}
+              style={styles.mapContainer}>
+              <Image source={{uri: item.uri}} style={styles.imageStyle} />
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {/* pagination content render here */}
       <View style={styles.paginationView}>
         {/* Previous button component */}
         <View>
-          <TouchableOpacity activeOpacity={0.5} style={styles.buttonStyle}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.buttonStyle}
+            onPress={PreviousPageMethod}>
             <Text style={styles.buttonText}>Previous</Text>
           </TouchableOpacity>
         </View>
@@ -70,7 +108,10 @@ const RenderImage = ({ImageData}: any) => {
 
         {/* next button component */}
         <View>
-          <TouchableOpacity activeOpacity={0.5} style={styles.buttonStyle}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.buttonStyle}
+            onPress={NextPageMethod}>
             <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>
         </View>
@@ -82,6 +123,16 @@ const RenderImage = ({ImageData}: any) => {
 export default RenderImage;
 
 const styles = StyleSheet.create({
+  noImageFoundView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: heightToDp(2),
+  },
+  noImageFoundText: {
+    fontSize: ConstValue.regularFontSize + 1,
+    color: ColorValue.BLACK,
+    textAlign: 'center',
+  },
   container: {
     width: '100%',
     alignItems: 'center',
@@ -106,7 +157,6 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   paginationView: {
-    borderWidth: 1,
     width: '40%',
     flexDirection: 'row',
     justifyContent: 'space-between',

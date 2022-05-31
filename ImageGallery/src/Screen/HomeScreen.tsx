@@ -27,6 +27,7 @@ import Color from '../component/Color';
 import {RootStackParamList} from '../NavigationFlow';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import RenderImage from './homeComponent/RenderImage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //define globally of color value
 const ColorValue = Color();
 const {width} = Dimensions.get('window');
@@ -37,7 +38,21 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ImageView'>;
 
 const HomeScreen = ({navigation}: Props) => {
   // our use state is defined here
+  // define state to save data inside local storage
   const [imageData, setImageData] = useState<any>([]);
+
+  /**
+   * Persists data from local storage
+   */
+  useEffect(() => {
+    getImage();
+  }, [imageData]);
+  // method to persist data from local storage
+  const getImage = async () => {
+    var result = JSON.parse((await AsyncStorage.getItem('imageData')) || '[]');
+    // after persist, put it inside our state
+    setImageData(result);
+  };
 
   /**
    * Camera related method will define here
@@ -86,7 +101,12 @@ const HomeScreen = ({navigation}: Props) => {
             } else {
               let source = response.assets[0];
               //put source inside state
-              setImageData([...imageData, source]);
+              // setImageData([...imageData, source]);
+              // process to save image inside local storage
+              const storeImage = [...imageData, source];
+              setImageData(storeImage);
+              // store it inside local storage
+              AsyncStorage.setItem('imageData', JSON.stringify(storeImage));
             }
           }
         });
@@ -110,7 +130,7 @@ const HomeScreen = ({navigation}: Props) => {
         <View style={styles.BodyViewStyle}>
           {/* Render Image component */}
           <View style={styles.imageView}>
-            <RenderImage ImageData={imageData} />
+            <RenderImage ImageData={imageData} navigation={navigation} />
           </View>
         </View>
       </ScrollView>
