@@ -126,7 +126,13 @@ const HomeScreen = ({navigation}: Props) => {
 
   const panResponder = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
+      //This will give us access to button inside pan responder
+      onMoveShouldSetPanResponder: (evt, {dx, dy}) => {
+        if (dx > 0 || dy > 0) {
+          return true;
+        }
+        return false;
+      },
 
       // onPanResponderMove: (evt, gestureState) => { },
       onPanResponderRelease: (evt, gestureState) => {
