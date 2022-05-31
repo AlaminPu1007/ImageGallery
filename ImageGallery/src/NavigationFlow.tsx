@@ -17,7 +17,7 @@ import ImageViewScreen from './Screen/ImageViewScreen';
 // type for auth stack
 export type RootStackParamList = {
   Home: undefined;
-  ImageView: undefined;
+  ImageView: {item: any};
 };
 //create stack navigation
 const StackNav = createNativeStackNavigator<RootStackParamList>();

@@ -11,6 +11,8 @@ import {heightToDp, ResponsiveFontSize} from '../../component/Responsive';
 import ConstValue from '../../component/ConstValue';
 import Color from '../../component/Color';
 import {useNavigation} from '@react-navigation/native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../NavigationFlow';
 
 //get dimension value
 const {width} = Dimensions.get('window');
@@ -18,7 +20,7 @@ const ColorValue = Color();
 
 const RenderImage = ({ImageData}: any) => {
   // define navigation by use navigation hook
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   ///pagination useState
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -73,7 +75,7 @@ const RenderImage = ({ImageData}: any) => {
   return (
     <View style={styles.container}>
       <View style={styles.bodyContainer}>
-        {currentPosts.map(item => {
+        {currentPosts.map((item: any) => {
           return (
             <TouchableOpacity
               onPress={() => {
